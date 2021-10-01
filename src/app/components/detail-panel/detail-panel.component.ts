@@ -1,4 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Element, ElementType, MainService } from 'src/app/services/main.service';
 
 @Component({
@@ -7,17 +9,28 @@ import { Element, ElementType, MainService } from 'src/app/services/main.service
   styleUrls: ['./detail-panel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DetailPanelComponent implements OnInit {
+export class DetailPanelComponent implements OnInit, OnDestroy {
   @Input()
   public element: Element;
-
   public elementTypes: Array<ElementType>;
+  private elementTypeSubscription: Subscription;
 
   constructor(private readonly mainService: MainService) {}
 
   ngOnInit() {
-    (async () => {
-      this.elementTypes = await this.mainService.getAllElementTypes().toPromise();
-    })();
+    this.elementTypeSubscription = this.mainService
+      .getAllElementTypes()
+      .pipe(take(1))
+      .subscribe((res) => {
+        if (res) {
+          this.elementTypes = res;
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.elementTypeSubscription) {
+      this.elementTypeSubscription.unsubscribe();
+    }
   }
 }

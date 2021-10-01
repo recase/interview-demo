@@ -1,4 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Element, ElementType, MainService } from 'src/app/services/main.service';
 
 @Component({
@@ -6,7 +8,7 @@ import { Element, ElementType, MainService } from 'src/app/services/main.service
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnDestroy {
   @Input()
   public set elements(elements: Array<Element>) {
     /** We want to show same type elements in same column */
@@ -24,22 +26,26 @@ export class TableComponent implements OnInit {
   public elementTypes: Array<ElementType> = [];
   public elementCountPerType: { [type: string]: number } = {};
   public selectedElement: Element = null;
+  private elementTypeSubscription: Subscription;
 
   constructor(private readonly mainService: MainService) {}
 
   ngOnInit() {
-    (async () => {
-      await (
-        await this.mainService.getAllElementTypes().toPromise()
-      ).forEach((type) => {
-        const _ =
-          this.elementTypes.find((et) => et.uri === type.uri.split('@').shift()) ||
-          this.elementTypes.push({
-            ...type,
-            uri: type.uri.split('@').shift()
+    this.elementTypeSubscription = this.mainService
+      .getAllElementTypes()
+      .pipe(take(1))
+      .subscribe((res) => {
+        if (res) {
+          res.forEach((type) => {
+            const _ =
+              this.elementTypes.find((et) => et.uri === type.uri.split('@').shift()) ||
+              this.elementTypes.push({
+                ...type,
+                uri: type.uri.split('@').shift()
+              });
           });
+        }
       });
-    })();
   }
 
   public get rows(): Array<undefined> {
@@ -50,6 +56,12 @@ export class TableComponent implements OnInit {
     if (element) {
       this.selected.emit(element.uri);
       this.selectedElement = element;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.elementTypeSubscription) {
+      this.elementTypeSubscription.unsubscribe();
     }
   }
 }
