@@ -38,8 +38,7 @@ export class TableComponent implements OnInit, OnDestroy {
       .subscribe((res) => {
         if (res) {
           res.forEach((type) => {
-            const _ =
-              this.elementTypes.find((et) => et.uri === type.uri.split('@').shift()) ||
+            this.elementTypes.find((et) => et.uri === type.uri.split('@').shift()) ||
               this.elementTypes.push({
                 ...type,
                 uri: type.uri.split('@').shift()
@@ -53,7 +52,7 @@ export class TableComponent implements OnInit, OnDestroy {
     return new Array(Math.max(...Object.values(this.elementCountPerType), 0));
   }
 
-  public onClicked(element) {
+  public onClicked(element: Element) {
     if (element) {
       this.selected.emit(element.uri);
       this.selectedElement = element;
