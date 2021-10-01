@@ -36,16 +36,21 @@ export class TableComponent implements OnInit, OnDestroy {
       .getAllElementTypes()
       .pipe(take(1))
       .subscribe((res) => {
-        if (res) {
-          res.forEach((type) => {
-            this.elementTypes.find((et) => et.uri === type.uri.split('@').shift()) ||
-              this.elementTypes.push({
-                ...type,
-                uri: type.uri.split('@').shift()
-              });
-          });
-        }
+        this.buildElementType(res);
       });
+  }
+
+  private buildElementType(data: ElementType[]) {
+    data.forEach((type) => {
+      const uri = type.uri.split('@').shift();
+      const hasElementType = this.elementTypes.find((et) => et.uri === uri);
+      if (!hasElementType) {
+        this.elementTypes.push({
+          ...type,
+          uri
+        });
+      }
+    });
   }
 
   public get rows(): Array<undefined> {
