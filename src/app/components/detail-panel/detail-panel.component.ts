@@ -1,7 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { Element, ElementType, MainService } from 'src/app/services/main.service';
+import { Element, ElementType } from 'src/app/interface';
+import { MainService } from 'src/app/services/main.service';
 
 @Component({
   selector: 'ui-detail-panel',

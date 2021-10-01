@@ -1,4 +1,4 @@
-import { ElementType } from '../services/main.service';
+import { ElementType } from '../interface';
 
 export const LocalElementTypes: Array<ElementType> = [
   {
