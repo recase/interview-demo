@@ -1,2 +1,8 @@
-<ui-table [elements]="elements" (selected)="onSelected($event)"></ui-table>
-<ui-detail-panel [element]="selected" *ngIf="selected"></ui-detail-panel>
+<div *ngIf="isLoading; else tableData">
+  <app-loading></app-loading>
+</div>
+
+<ng-template #tableData>
+  <ui-table [elements]="elements" (selected)="onSelected($event)"></ui-table>
+  <ui-detail-panel [element]="selected" *ngIf="selected"></ui-detail-panel>
+</ng-template>

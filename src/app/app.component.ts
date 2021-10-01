@@ -12,6 +12,7 @@ import { Element } from './interface';
 export class AppComponent implements OnInit, OnDestroy {
   public elements: Array<Element>;
   public selected: Element;
+  public isLoading = true;
   private elementSubscription: Subscription;
 
   constructor(private readonly mainService: MainService) {}
@@ -21,6 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .getAllElements()
       .pipe(take(1))
       .subscribe((res) => {
+        this.isLoading = false;
         this.elements = res;
       });
   }

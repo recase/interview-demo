@@ -14,6 +14,7 @@ export class DetailPanelComponent implements OnInit, OnDestroy {
   @Input()
   public element: Element;
   public elementTypes: Array<ElementType>;
+  public isLoading = true;
   private elementTypeSubscription: Subscription;
 
   constructor(private readonly mainService: MainService) {}
@@ -23,9 +24,8 @@ export class DetailPanelComponent implements OnInit, OnDestroy {
       .getAllElementTypes()
       .pipe(take(1))
       .subscribe((res) => {
-        if (res) {
-          this.elementTypes = res;
-        }
+        this.isLoading = false;
+        this.elementTypes = res;
       });
   }
 
